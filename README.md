@@ -6,4 +6,4 @@
 
 ## *Project Status - Initialized.*
 ## Testing the *entire* CLI setup
-## The entire CLI is setup and made its first commit on the branch `entire/checkpoints/v1`.
+## Testing entire setup with copilot cli as codex failed
