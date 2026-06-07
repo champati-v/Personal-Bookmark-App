@@ -1,0 +1,177 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "b848dd1835c1",
+  "session_id": "f9e61cb4-0d72-4289-9133-6eeba45ae457",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-07T16:19:07.5510164Z",
+  "branch": "master",
+  "checkpoints_count": 9,
+  "files_touched": [
+    "src/app/api/username-availability/route.ts",
+    "src/app/auth-actions.ts",
+    "src/app/dashboard/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/login/page.tsx",
+    "src/app/page.tsx",
+    "src/app/signup/page.tsx",
+    "src/components/auth-form.tsx",
+    "src/components/signup-form.tsx",
+    "src/lib/supabase/admin.ts",
+    "src/lib/supabase/config.ts",
+    "src/lib/supabase/username.ts",
+    "src/lib/username.ts",
+    "src/middleware.ts"
+  ],
+  "agent": "Copilot CLI",
+  "model": "gpt-5.4-mini",
+  "turn_id": "eef3506a7134",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 49235,
+    "api_call_count": 52
+  },
+  "session_metrics": {
+    "turn_count": 10
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-07T16:19:07.501336Z",
+    "agent_lines": 0,
+    "agent_removed": 8,
+    "human_added": 601,
+    "human_modified": 671,
+    "human_removed": 0,
+    "total_committed": 703,
+    "total_lines_changed": 1280,
+    "agent_percentage": 0.625,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 323,
+      "agent_lines_removed": 65
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 323,
+      "agent_lines_removed": 65
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 16,
+      "user_lines_removed": 5,
+      "agent_lines_added": 333,
+      "agent_lines_removed": 65,
+      "user_added_per_file": {
+        "src/app/auth-actions.ts": 11,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 97,
+      "user_lines_removed": 7,
+      "agent_lines_added": 625,
+      "agent_lines_removed": 79,
+      "user_added_per_file": {
+        "src/app/auth-actions.ts": 92,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/app/auth-actions.ts": 2,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 97,
+      "user_lines_removed": 7,
+      "agent_lines_added": 625,
+      "agent_lines_removed": 79,
+      "user_added_per_file": {
+        "src/app/auth-actions.ts": 92,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/app/auth-actions.ts": 2,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 97,
+      "user_lines_removed": 7,
+      "agent_lines_added": 625,
+      "agent_lines_removed": 79,
+      "user_added_per_file": {
+        "src/app/auth-actions.ts": 92,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/app/auth-actions.ts": 2,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 97,
+      "user_lines_removed": 7,
+      "agent_lines_added": 625,
+      "agent_lines_removed": 79,
+      "user_added_per_file": {
+        "src/app/auth-actions.ts": 92,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/app/auth-actions.ts": 2,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 137,
+      "user_lines_removed": 22,
+      "agent_lines_added": 643,
+      "agent_lines_removed": 79,
+      "user_added_per_file": {
+        "src/app/api/username-availability/route.ts": 20,
+        "src/app/auth-actions.ts": 110,
+        "src/components/auth-form.tsx": 3,
+        "src/lib/supabase/admin.ts": 2,
+        "src/middleware.ts": 2
+      },
+      "user_removed_per_file": {
+        "src/app/api/username-availability/route.ts": 15,
+        "src/app/auth-actions.ts": 2,
+        "src/components/auth-form.tsx": 3,
+        "src/middleware.ts": 2
+      }
+    }
+  ]
+}
