@@ -7,6 +7,7 @@ import {
   validateUsername,
 } from '@/lib/username';
 import { isUsernameAvailable } from '@/lib/supabase/username';
+import { sendWelcomeEmail } from '@/lib/resend/welcome-email';
 import { redirect } from 'next/navigation';
 
 export type AuthState = {
@@ -168,8 +169,19 @@ export async function signupAction(
     };
   }
 
+  const welcomeEmailResult = await sendWelcomeEmail({
+    to: email,
+    username,
+  });
+
   if (data.session) {
     redirect('/dashboard');
+  }
+
+  if (!welcomeEmailResult.ok) {
+    return {
+      message: `Account created. Welcome email could not be sent: ${welcomeEmailResult.error}`,
+    };
   }
 
   return {
