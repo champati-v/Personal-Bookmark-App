@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "6cd0654c6bbe",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "docs/progress.md",
+    "package-lock.json",
+    "package.json",
+    "src/app/api/email/route.ts",
+    "src/app/auth-actions.ts",
+    "src/components/email-template.tsx",
+    "src/lib/mail.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6c/d0654c6bbe/0/metadata.json",
+      "transcript": "/6c/d0654c6bbe/0/full.jsonl",
+      "content_hash": "/6c/d0654c6bbe/0/content_hash.txt",
+      "prompt": "/6c/d0654c6bbe/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 60107,
+    "api_call_count": 66
+  }
+}
