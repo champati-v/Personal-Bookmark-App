@@ -1,0 +1,134 @@
+add a line inside @README.md - "Testing entire setup with copilot cli as codex failed".
+
+---
+
+Project Context
+
+We are building a bookmark management application for a software engineering take-home assignment.
+
+Tech Stack:
+
+* Next.js 15 App Router
+* TypeScript
+* Tailwind CSS
+* Supabase
+* Resend
+* Vercel
+
+Core Features:
+
+* Email/password authentication
+* User profiles with unique public handles
+* Bookmark CRUD
+* Public/private bookmark visibility
+* Public profile pages at /[handle]
+* Protected dashboard for authenticated users
+
+Current Database Schema:
+
+profiles
+
+* id (uuid, references auth.users.id)
+* handle (unique)
+* created_at
+
+bookmarks
+
+* id (uuid)
+* user_id (references profiles.id)
+* title
+* url
+* is_public
+* created_at
+* updated_at
+
+Security Requirements:
+
+* Users must only access their own bookmarks
+* Row Level Security (RLS) is already configured in Supabase
+* Public visitors can only view bookmarks where is_public = true
+* Do not modify the existing database schema or security model
+
+Development Principles:
+
+* Keep implementations minimal and production-ready
+* Avoid unnecessary abstractions
+* Use modern Supabase SSR patterns
+* Follow Next.js 15 App Router best practices
+* Do not implement features outside the requested scope
+
+---
+
+Using the project context above, implement the Supabase infrastructure layer only.
+
+The following files already exist:
+
+src/lib/supabase/client.ts
+src/lib/supabase/server.ts
+src/lib/supabase/middleware.ts
+
+Requirements:
+
+1. client.ts
+
+* Create a browser Supabase client
+* Use createBrowserClient from @supabase/ssr
+* Read environment variables safely
+* TypeScript
+
+2. server.ts
+
+* Create a server Supabase client
+* Use createServerClient from @supabase/ssr
+* Compatible with Next.js 15 App Router
+* Use cookies from next/headers
+
+3. middleware.ts
+
+* Create a middleware helper for session refresh
+* Compatible with Next.js middleware
+* Use NextRequest and NextResponse
+
+Important:
+
+* Use only modern @supabase/ssr APIs
+* Do not use deprecated auth helper packages
+* Do not implement authentication pages
+* Do not implement signup/login logic
+* Do not create database queries
+* Do not create profile creation logic
+* Do not create bookmark CRUD functionality
+
+Only implement clean, production-ready Supabase infrastructure files.
+
+---
+
+Briefly explain why you chose this implementation and whether any parts depend on Next.js 15 or @supabase/ssr specific APIs.
+
+---
+
+running npm run build gave these errors, show me the root cause and fix it.
+
+---
+
+running npm run build gave these errors, show me the root cause and fix it.  Running TypeScript  .Failed to type check.
+
+.next/types/validator.ts:42:39
+Type error: File 'C:/Users/vibek/OneDrive/Desktop/EagerMinds_Assignment/bookmark-app/src/app/[handle]/page.tsx' is not a module.
+
+  40 | {
+  41 |   type __IsExpected<Specific extends AppPageConfig<"/[handle]">> = Specific
+> 42 |   const handler = {} as typeof import("../../src/app/[handle]/page.js")
+     |                                       ^
+  43 |   type __Check = __IsExpected<typeof handler>
+  44 |   // @ts-ignore
+  45 |   type __Unused = __Check
+Next.js build worker exited with code: 1 and signal: null
+
+---
+
+The getSupabaseEnv helper is duplicated in client.ts, server.ts and middleware.ts.
+
+Create a shared config.ts file under src/lib/supabase and update all files to reuse the helper.
+
+Keep functionality unchanged.

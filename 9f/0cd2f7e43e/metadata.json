@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "9f0cd2f7e43e",
+  "strategy": "manual-commit",
+  "branch": "master",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "package-lock.json",
+    "package.json",
+    "src/app/[handle]/page.tsx",
+    "src/app/dashboard/page.tsx",
+    "src/app/login/page.tsx",
+    "src/app/page.tsx",
+    "src/app/settings/page.tsx",
+    "src/app/signup/page.tsx",
+    "src/lib/supabase/config.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/9f/0cd2f7e43e/0/metadata.json",
+      "transcript": "/9f/0cd2f7e43e/0/full.jsonl",
+      "content_hash": "/9f/0cd2f7e43e/0/content_hash.txt",
+      "prompt": "/9f/0cd2f7e43e/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 14471,
+    "api_call_count": 49
+  }
+}
