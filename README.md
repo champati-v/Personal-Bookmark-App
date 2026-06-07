@@ -5,3 +5,4 @@
 ### Tech Stack: Next.js *(with Typescript)*, Supabase, Resend, Vercel.
 
 ## *Project Status - Initialized.*
+## Testng the *entire* CLI setup
