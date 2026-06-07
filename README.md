@@ -5,4 +5,5 @@
 ### Tech Stack: Next.js *(with Typescript)*, Supabase, Resend, Vercel.
 
 ## *Project Status - Initialized.*
-## Testng the *entire* CLI setup
+## Testing the *entire* CLI setup
+## The entire CLI is setup and made its first commit on the branch `entire/checkpoints/v1`.
