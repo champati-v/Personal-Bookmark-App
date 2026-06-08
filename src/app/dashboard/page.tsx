@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-import { createBookmarkAction } from '@/app/bookmark-actions';
 import { logoutAction } from '@/app/auth-actions';
-import { BookmarkForm } from '@/components/bookmark-form';
+import { BookmarkDialog } from '@/components/bookmark-dialog';
+import { BookmarkDeleteButton } from '@/components/bookmark-delete-button';
 import { createClient } from '@/lib/supabase/server';
 
 type Bookmark = {
@@ -25,6 +25,7 @@ export default async function DashboardPage() {
   const { data, error } = await supabase
     .from('bookmarks')
     .select('id, title, url, is_public')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -46,18 +47,22 @@ export default async function DashboardPage() {
                 Your bookmarks
               </h1>
             </div>
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="inline-flex h-11 items-center justify-center rounded-full border border-black/10 px-4 text-sm font-medium text-black"
-              >
-                Log out
-              </button>
-            </form>
-          </div>
-
-          <div className="mt-8">
-            <BookmarkForm action={createBookmarkAction} />
+            <div className="flex gap-3">
+              <BookmarkDialog
+                triggerLabel="Add Bookmark"
+                title="Add bookmark"
+                description="Save a bookmark to your dashboard."
+                triggerClassName="inline-flex h-11 items-center justify-center rounded-full bg-black px-4 text-sm font-medium text-white"
+              />
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="inline-flex h-11 items-center justify-center rounded-full border border-black/10 px-4 text-sm font-medium text-black"
+                >
+                  Log out
+                </button>
+              </form>
+            </div>
           </div>
 
           {bookmarks.length === 0 ? (
@@ -85,15 +90,31 @@ export default async function DashboardPage() {
                         {bookmark.url}
                       </a>
                     </div>
-                    <span
-                      className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium ${
-                        bookmark.is_public
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : 'bg-black/5 text-black/65'
-                      }`}
-                    >
-                      {bookmark.is_public ? 'Public' : 'Private'}
-                    </span>
+                    <div className="flex flex-col items-start gap-3 sm:items-end">
+                      <span
+                        className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium ${
+                          bookmark.is_public
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-black/5 text-black/65'
+                        }`}
+                      >
+                        {bookmark.is_public ? 'Public' : 'Private'}
+                      </span>
+                      <BookmarkDialog
+                        triggerLabel="Edit"
+                        title="Edit bookmark"
+                        description="Update the title, URL, or visibility."
+                        values={{
+                          bookmarkId: bookmark.id,
+                          title: bookmark.title,
+                          url: bookmark.url,
+                          isPublic: bookmark.is_public,
+                        }}
+                        mode="edit"
+                        triggerClassName="inline-flex h-9 items-center justify-center rounded-full border border-black/10 px-3 text-sm font-medium text-black"
+                      />
+                      <BookmarkDeleteButton bookmarkId={bookmark.id} />
+                    </div>
                   </div>
                 </li>
               ))}

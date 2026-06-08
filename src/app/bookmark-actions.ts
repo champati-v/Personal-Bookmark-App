@@ -1,11 +1,20 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
 
 export type BookmarkState = {
   error?: string;
+  success?: boolean;
+};
+
+export type BookmarkValues = {
+  bookmarkId?: string;
+  title: string;
+  url: string;
+  isPublic: boolean;
 };
 
 function readField(formData: FormData, key: string) {
@@ -76,5 +85,124 @@ export async function createBookmarkAction(
     };
   }
 
-  redirect('/dashboard');
+  revalidatePath('/dashboard');
+
+  return {
+    success: true,
+  };
+}
+
+export async function updateBookmarkAction(
+  _: BookmarkState,
+  formData: FormData,
+): Promise<BookmarkState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  const bookmarkId = readField(formData, 'bookmark_id');
+  const title = readField(formData, 'title');
+  const url = readField(formData, 'url');
+  const isPublic = formData.get('is_public') === 'on';
+
+  if (!bookmarkId) {
+    return {
+      error: 'Bookmark id is required.',
+    };
+  }
+
+  if (!title) {
+    return {
+      error: 'Title is required.',
+    };
+  }
+
+  const urlError = validateUrl(url);
+
+  if (urlError) {
+    return {
+      error: urlError,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('bookmarks')
+    .update({
+      title,
+      url,
+      is_public: isPublic,
+    })
+    .eq('id', bookmarkId)
+    .eq('user_id', user.id)
+    .select('id');
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  if (!data || data.length === 0) {
+    return {
+      error: 'Bookmark not found.',
+    };
+  }
+
+  revalidatePath('/dashboard');
+
+  return {
+    success: true,
+  };
+}
+
+export async function deleteBookmarkAction(
+  _: BookmarkState,
+  formData: FormData,
+): Promise<BookmarkState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  const bookmarkId = readField(formData, 'bookmark_id');
+
+  if (!bookmarkId) {
+    return {
+      error: 'Bookmark id is required.',
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('bookmarks')
+    .delete()
+    .eq('id', bookmarkId)
+    .eq('user_id', user.id)
+    .select('id');
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  if (!data || data.length === 0) {
+    return {
+      error: 'Bookmark not found.',
+    };
+  }
+
+  revalidatePath('/dashboard');
+
+  return {
+    success: true,
+  };
 }

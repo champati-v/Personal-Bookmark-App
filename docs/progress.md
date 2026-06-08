@@ -13,3 +13,5 @@
 - User dashboard created with route protection
 - Fetch and display bookmarks of the authenticated user. 
 - Create new bookmark with title, url, and public/private checkbox (with validations). 
+- Edit bookmark using the same form dialog.
+- Delete bookmark, with confirmation.
