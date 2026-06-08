@@ -1,0 +1,131 @@
+Project context - We are building a bookmark management application using:
+
+Next.js 15 App Router
+TypeScript
+Tailwind CSS
+Supabase
+Resend
+Vercel
+
+Completed:
+
+Authentication (signup, login, logout)
+Unique username/handle support
+Username availability validation
+Profile creation in the profiles table
+Welcome email via Resend
+RLS policies are configured
+
+Database:
+
+profiles
+
+id
+handle
+created_at
+
+bookmarks
+
+id
+user_id
+title
+url
+is_public
+created_at
+updated_at
+
+Security:
+
+Users may only access their own bookmarks
+Public users may only view bookmarks where is_public = true. acknowledge the context and wait for the next instruction.
+
+---
+
+Current task: Protected dashboard and bookmark listing
+
+Requirements:
+Dashboard:
+- Protect
+- unauthenticated user should be redirected to /login
+- Only Authenticated users can access this page
+
+Bookmarks:
+- fetch bookmarks belonging to the current authenticated user
+- Display title, URL and visibility status (public/private)
+- Show proper empty state when no bookmark is present
+
+Security:
+- use the authenticated user's id
+- Donot query bookmarks belonging to other users.
+
+Only implement the route protection, bookmark retrieval and display, donot implement anything else now. 
+make sure the implementation follows the project's coding standard. Keep things simple and production ready.
+
+---
+
+I am getting a permission denied error in the dashboard ---> GET /dashboard 500 in 839ms (next.js: 15ms, proxy.ts: 371ms, application-code: 454ms)
+[browser] Uncaught Error: permission denied for table bookmarks
+    at DashboardPage (src\app\dashboard\page.tsx:30:11)
+  28 |
+  29 |   if (error) {
+> 30 |     throw new Error(error.message);
+     |           ^
+  31 |   }
+  32 |
+  33 |   const bookmarks = (data ?? []) as Bookmark[];
+
+check and find the root cause
+
+---
+
+Task: Bookmark creation
+In the dashboard, add a bookmark creation form.
+Fields - title (required), url (required), is_public (boolean, false by default)
+
+Validation: 
+title cannot be empty and url should be valid
+
+Submission:
+Create a bookmark owned by the currently authenticated user
+Use the authenticated user's id
+Insert into the bookmarks table
+
+After successful creation, show the updated bookmarks on the dashboard.
+
+Security:
+Use the authenticated user's id. Donot use the service role client. 
+
+Focus only on bookmark creation and display, donot implement anything else now.
+
+---
+
+Currently the create bookmark form is always being displayed open in the dashboard. I want you to add a Add Bookmark button in the dashboard which will open the form as a dialog. Then after sucessfull submission, the form will close. All existing functionality will remain same, just a change in the UI.
+
+---
+
+The bookmark form is opening in the top left corner, make it in the center of the screen.
+
+---
+
+Now the bookmark dialog is fixed in the screen, I am not able to close it using the X button. The form is not closing even after adding a new URL. So fix it such that form closes on clickking outside, clicking on the X button and after successfull submission of URL. Form should only open on clicking the Add Bookmark button.
+
+---
+
+Current task:
+implement the edit bookmark functionality.
+- Each bookmark will have an edit button, which will open the bookmark form dialog in edit mode with all the details populated. 
+- user can udpdate the title, url and the public/private with all the validations intact. 
+- Reuse the bookmark form if possible, avoid creating a new form for edit. 
+- keep the implementation simple and prodcution ready.
+
+---
+
+Task: Implement delete bookmark functionality
+-Each bookmark will have a delete button
+- before deletion, show a confirmation dialog.
+- User must confirm deletion
+
+After deletion, the dashboard should display the updated list.
+
+Make sure the security remains same, i.e. - users can only edit, or delete their own bookmarks, and do not use the service role client. 
+- keep the implementation simple and production ready.

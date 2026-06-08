@@ -1,0 +1,96 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "37af7bff8789",
+  "session_id": "d5a6f462-faaf-4ec2-9e90-b2930afdf1a9",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T06:01:43.634653Z",
+  "branch": "master",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "src/app/bookmark-actions.ts",
+    "src/app/dashboard/page.tsx",
+    "src/components/bookmark-delete-button.tsx",
+    "src/components/bookmark-dialog.tsx",
+    "src/components/bookmark-form.tsx"
+  ],
+  "agent": "Copilot CLI",
+  "model": "gpt-5.4-mini",
+  "turn_id": "61b32e6181dd",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 33074,
+    "api_call_count": 75
+  },
+  "session_metrics": {
+    "turn_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T06:01:43.5807322Z",
+    "agent_lines": 0,
+    "agent_removed": 13,
+    "human_added": 139,
+    "human_modified": 585,
+    "human_removed": 0,
+    "total_committed": 518,
+    "total_lines_changed": 737,
+    "agent_percentage": 1.7639077340569878,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 226,
+      "agent_lines_removed": 181
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 226,
+      "agent_lines_removed": 181,
+      "user_added_per_file": {
+        "src/components/bookmark-dialog.tsx": 2
+      },
+      "user_removed_per_file": {
+        "src/components/bookmark-dialog.tsx": 2
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 53,
+      "user_lines_removed": 28,
+      "agent_lines_added": 319,
+      "agent_lines_removed": 261,
+      "user_added_per_file": {
+        "src/components/bookmark-dialog.tsx": 53
+      },
+      "user_removed_per_file": {
+        "src/components/bookmark-dialog.tsx": 28
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 89,
+      "user_lines_removed": 32,
+      "agent_lines_added": 429,
+      "agent_lines_removed": 261,
+      "user_added_per_file": {
+        "src/components/bookmark-dialog.tsx": 89
+      },
+      "user_removed_per_file": {
+        "src/components/bookmark-dialog.tsx": 32
+      }
+    }
+  ]
+}
