@@ -1,0 +1,71 @@
+Contaxt: We are building a personal bookmark management application
+Completed Features:
+
+User signup with email/password
+User login and logout
+Unique username/handle support
+Username availability check
+Profile creation in the profiles table
+Welcome email using Resend
+Protected dashboard
+Bookmark CRUD (Create, Read, Update, Delete)
+Public/private bookmark visibility
+Supabase RLS policies configured
+Security and ownership checks implemented
+
+Database:
+
+profiles
+
+id (uuid)
+handle (unique)
+created_at
+
+bookmarks
+
+id (uuid)
+user_id
+title
+url
+is_public
+created_at
+updated_at
+
+currently we are building the public profile pages using the route /[handle] with 
+Requirements:
+Anyone can visit /[handle] without authentication.
+Find the profile by handle.
+Show only bookmarks where is_public = true.
+Never expose private bookmarks.
+Return a proper 404 page if the handle does not exist.
+Show a friendly empty state when a user has no public bookmarks.
+
+acknowledge the context and wait for the next instruction.
+
+---
+
+Error: Route "/[handle]" used `params.handle`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at PublicProfilePage (src\app\[handle]\page.tsx:22:26)
+  20 |     .from('profiles')
+  21 |     .select('id, handle')
+> 22 |     .eq('handle', params.handle)
+     |                          ^
+  23 |     .maybeSingle<Profile>();
+  24 |
+  25 |   if (profileError) {
+ GET /skills 404 in 2.4s (next.js: 780ms, application-code: 1642ms)
+
+gettting this error while searching for a handle in /[handle] route. find the root cause and fix it.
+
+---
+
+The public profile route /[handle] currently requires authentication, which is incorrect.
+Expected behaviour:
+Public profile pages must be accessible without logging in.
+Any visitor should be able to open /[handle].
+Only public bookmarks (is_public = true) should be shown.
+Private bookmarks must never be exposed.
+Invalid handles should return a 404 page.
+
+make sure not to change functionality of the dashboard or anything else. 
+find the root cause and apply the fix. and it should be focused and production ready.
