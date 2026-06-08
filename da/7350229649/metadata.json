@@ -3,14 +3,17 @@
   "checkpoint_id": "da7350229649",
   "strategy": "manual-commit",
   "branch": "master",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     "src/app/[handle]/not-found.tsx",
     "src/app/[handle]/page.tsx",
     "src/app/dashboard/page.tsx",
+    "src/components/auth-form.tsx",
     "src/components/bookmark-delete-button.tsx",
     "src/components/bookmark-dialog.tsx",
-    "src/components/bookmark-form.tsx"
+    "src/components/bookmark-form.tsx",
+    "src/components/email-template.tsx",
+    "src/components/signup-form.tsx"
   ],
   "sessions": [
     {
@@ -24,13 +27,19 @@
       "transcript": "/da/7350229649/1/full.jsonl",
       "content_hash": "/da/7350229649/1/content_hash.txt",
       "prompt": "/da/7350229649/1/prompt.txt"
+    },
+    {
+      "metadata": "/da/7350229649/2/metadata.json",
+      "transcript": "/da/7350229649/2/full.jsonl",
+      "content_hash": "/da/7350229649/2/content_hash.txt",
+      "prompt": "/da/7350229649/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 0,
+    "input_tokens": 3364095,
     "cache_creation_tokens": 0,
-    "cache_read_tokens": 0,
-    "output_tokens": 36294,
-    "api_call_count": 87
+    "cache_read_tokens": 3006976,
+    "output_tokens": 96401,
+    "api_call_count": 153
   }
 }
