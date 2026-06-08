@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "3e0b04a16438",
+  "session_id": "d5a6f462-faaf-4ec2-9e90-b2930afdf1a9",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T08:50:19.1704443Z",
+  "branch": "master",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "src/app/[handle]/page.tsx",
+    "src/app/dashboard/page.tsx",
+    "src/components/bookmark-delete-button.tsx",
+    "src/middleware.ts"
+  ],
+  "agent": "Copilot CLI",
+  "model": "gpt-5.4-mini",
+  "turn_id": "deba1ca014f2",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 36294,
+    "api_call_count": 87
+  },
+  "session_metrics": {
+    "turn_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T08:50:19.0937028Z",
+    "agent_lines": 0,
+    "agent_removed": 78,
+    "human_added": 399,
+    "human_modified": 257,
+    "human_removed": 0,
+    "total_committed": 654,
+    "total_lines_changed": 989,
+    "agent_percentage": 7.886754297269969,
+    "metric_version": 2
+  }
+}
