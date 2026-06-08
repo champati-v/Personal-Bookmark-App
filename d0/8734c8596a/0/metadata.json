@@ -1,0 +1,82 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "d08734c8596a",
+  "session_id": "d5a6f462-faaf-4ec2-9e90-b2930afdf1a9",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-08T05:17:04.558566Z",
+  "branch": "master",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "src/app/bookmark-actions.ts",
+    "src/app/dashboard/page.tsx",
+    "src/components/bookmark-form.tsx",
+    "src/middleware.ts"
+  ],
+  "agent": "Copilot CLI",
+  "model": "gpt-5.4-mini",
+  "turn_id": "1dfc8f486c8d",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 13318,
+    "api_call_count": 30
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-08T05:17:04.5318563Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 322,
+    "human_removed": 62,
+    "total_committed": 200,
+    "total_lines_changed": 384,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 60,
+      "user_lines_removed": 60,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "src/middleware.ts": 60
+      },
+      "user_removed_per_file": {
+        "src/middleware.ts": 60
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 60,
+      "agent_lines_removed": 60
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 161,
+      "agent_lines_removed": 87
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 1,
+      "user_lines_removed": 1,
+      "agent_lines_added": 161,
+      "agent_lines_removed": 87,
+      "user_added_per_file": {
+        "src/app/dashboard/page.tsx": 1
+      },
+      "user_removed_per_file": {
+        "src/app/dashboard/page.tsx": 1
+      }
+    }
+  ]
+}
