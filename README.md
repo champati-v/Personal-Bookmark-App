@@ -7,3 +7,4 @@
 ## *Project Status - Initialized.*
 ## Testing the *entire* CLI setup
 ## Testing entire setup with copilot cli as codex failed
+## testing cursor CLI

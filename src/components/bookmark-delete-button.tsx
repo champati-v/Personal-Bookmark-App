@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   deleteBookmarkAction,
   type BookmarkState,
-} from '@/app/bookmark-actions';
+} from '@/app/services/bookmark-actions';
 
 type BookmarkDeleteButtonProps = {
   bookmarkId: string;

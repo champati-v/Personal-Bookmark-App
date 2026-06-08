@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 
-import type { BookmarkState, BookmarkValues } from '@/app/bookmark-actions';
+import type { BookmarkState, BookmarkValues } from '@/app/services/bookmark-actions';
 
 type BookmarkAction = (
   state: BookmarkState,

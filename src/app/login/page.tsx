@@ -1,4 +1,4 @@
-import { loginAction } from '@/app/auth-actions';
+import { loginAction } from '@/app/services/auth-actions';
 import { AuthForm } from '@/components/auth-form';
 
 export default function LoginPage() {

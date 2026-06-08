@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { logoutAction } from '@/app/auth-actions';
+import { logoutAction } from '@/app/services/auth-actions';
 import { BookmarkDialog } from '@/components/bookmark-dialog';
 import { BookmarkDeleteButton } from '@/components/bookmark-delete-button';
 import { createClient } from '@/lib/supabase/server';

@@ -1,4 +1,4 @@
-import { signupAction } from '@/app/auth-actions';
+import { signupAction } from '@/app/services/auth-actions';
 import { SignupForm } from '@/components/signup-form';
 
 export default function SignupPage() {

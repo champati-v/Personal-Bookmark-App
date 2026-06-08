@@ -7,7 +7,7 @@ import {
   createBookmarkAction,
   updateBookmarkAction,
   type BookmarkValues,
-} from '@/app/bookmark-actions';
+} from '@/app/services/bookmark-actions';
 import { BookmarkForm } from '@/components/bookmark-form';
 
 type BookmarkDialogProps = {

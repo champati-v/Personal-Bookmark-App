@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useActionState, useState } from 'react';
-import type { AuthState } from '@/app/auth-actions';
+import type { AuthState } from '@/app/services/auth-actions';
 import { normalizeUsername, validateUsername } from '@/lib/username';
 
 type AuthAction = (
