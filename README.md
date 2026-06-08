@@ -1,7 +1,7 @@
 # Personal Bookmark App Assignment | Eagerminds
 
 A bookmark management application built with Next.js, Supabase, and Resend.
-- Live Url - <https://links.vibek.space>
+- Live Url - <https://links.vibek.space> | <https://personal-bookmark-app.vercel.app/>
 
 ## Running Locally
 
