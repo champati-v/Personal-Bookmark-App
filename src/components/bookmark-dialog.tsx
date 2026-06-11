@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookmark, Sparkles, X } from 'lucide-react';
+import { Bookmark, PencilIcon, Plus, Sparkles, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
@@ -64,8 +64,11 @@ export function BookmarkDialog({
           triggerClassName ??
           'inline-flex h-11 items-center justify-center rounded-full bg-black px-4 text-sm font-medium text-white'
         }
-      >
+      > 
+      <div className='flex items-center gap-2'>
+      {mode=="edit"? <PencilIcon size={16}/>: <Plus />}
         {triggerLabel}
+        </div>
       </button>
 
       {isOpen && typeof document !== 'undefined'

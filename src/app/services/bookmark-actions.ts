@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
 
+import { BOOKMARK_CATEGORIES, type BookmarkCategory } from '../../types/bookmark';
+
 export type BookmarkState = {
   error?: string;
   success?: boolean;
@@ -15,6 +17,7 @@ export type BookmarkValues = {
   title: string;
   url: string;
   isPublic: boolean;
+  category?: string;
 };
 
 function readField(formData: FormData, key: string) {
@@ -57,6 +60,7 @@ export async function createBookmarkAction(
   const title = readField(formData, 'title');
   const url = readField(formData, 'url');
   const isPublic = formData.get('is_public') === 'on';
+  const category = readField(formData, 'category') || 'Other';
 
   if (!title) {
     return {
@@ -72,11 +76,18 @@ export async function createBookmarkAction(
     };
   }
 
+  if (!BOOKMARK_CATEGORIES.includes(category as BookmarkCategory)) {
+    return {
+      error: 'Invalid category.',
+    };
+  }
+
   const { error } = await supabase.from('bookmarks').insert({
     user_id: user.id,
     title,
     url,
     is_public: isPublic,
+    category,
   });
 
   if (error) {
@@ -109,6 +120,7 @@ export async function updateBookmarkAction(
   const title = readField(formData, 'title');
   const url = readField(formData, 'url');
   const isPublic = formData.get('is_public') === 'on';
+  const category = readField(formData, 'category') || 'Other';
 
   if (!bookmarkId) {
     return {
@@ -130,12 +142,19 @@ export async function updateBookmarkAction(
     };
   }
 
+  if (!BOOKMARK_CATEGORIES.includes(category as BookmarkCategory)) {
+    return {
+      error: 'Invalid category.',
+    };
+  }
+
   const { data, error } = await supabase
     .from('bookmarks')
     .update({
       title,
       url,
       is_public: isPublic,
+      category,
     })
     .eq('id', bookmarkId)
     .eq('user_id', user.id)

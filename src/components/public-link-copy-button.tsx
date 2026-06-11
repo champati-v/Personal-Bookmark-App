@@ -5,10 +5,12 @@ import { useEffect, useState } from 'react';
 
 type PublicLinkCopyButtonProps = {
   profileUrl: string;
+  type: string;
 };
 
 export function PublicLinkCopyButton({
   profileUrl,
+  type,
 }: PublicLinkCopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -33,6 +35,21 @@ export function PublicLinkCopyButton({
     }
   }
 
+  if (type === 'url') {
+    return (
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="inline-flex h-11 w-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/90 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950"
+        aria-label="Copy URL link"
+        title={copied ? 'Copied' : 'Copy URL'}
+      >
+        {copied ? <Check className="h-4 w-4 text-emerald-700" /> : <Copy className="h-4 w-4" />}
+      </button>
+    );
+  }
+
+  else if (type === "public_profile"){
   return (
     <button
       type="button"
@@ -46,4 +63,5 @@ export function PublicLinkCopyButton({
       <Link2 className="h-4 w-4 text-slate-400" />
     </button>
   );
+}
 }
