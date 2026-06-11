@@ -7,13 +7,16 @@ import {
   Plus,
   Sparkles,
   TrendingUp,
+  Search,
 } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { logoutAction } from "@/app/services/auth-actions";
 import { BookmarkDeleteButton } from "@/components/bookmark-delete-button";
 import { BookmarkDialog } from "@/components/bookmark-dialog";
 import { PublicLinkCopyButton } from "@/components/public-link-copy-button";
+import { SearchAndFilters } from "@/components/search-filters";
 import { createClient } from "@/lib/supabase/server";
 import { Bookmark } from "@/types";
 import Badge from "@/components/badge";
@@ -22,7 +25,7 @@ const primaryButtonClassName =
   "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-950 px-5 text-sm font-medium text-white shadow-[0_14px_30px_rgba(6,78,59,0.22)] transition hover:bg-emerald-900 sm:w-auto";
 
 const secondaryButtonClassName =
-  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/90 px-5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950 sm:w-auto";
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/90 px-5 text-sm font-medium text-slate-700 transition hover:bg-emerald-950 hover:text-white hover:border-slate-300 hover:text-slate-950 sm:w-auto";
 
 const cardActionButtonClassName =
   "inline-flex h-10 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950";
@@ -30,7 +33,11 @@ const cardActionButtonClassName =
 const cardDeleteButtonClassName =
   "inline-flex h-10 items-center justify-center gap-1 rounded-full border border-red-200 bg-white px-4 text-sm font-medium text-red-600 transition hover:bg-red-50";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string; page?: string }>;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -40,26 +47,83 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const [{ data, error }, { data: profile }] = await Promise.all([
-    supabase
-      .from("bookmarks")
-      .select("id, title, url, is_public, category")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }),
+  const resolvedParams = await searchParams;
+  const q = resolvedParams?.q;
+  const category = resolvedParams?.category;
+  const pageParam = resolvedParams?.page;
+
+  const parsedPage = parseInt(pageParam || "1", 10);
+  const currentPage = isNaN(parsedPage) ? 1 : Math.max(1, parsedPage);
+  const limit = 10;
+  const offset = (currentPage - 1) * limit;
+  const from = offset;
+  const to = offset + limit - 1;
+
+  let bookmarksQuery = supabase
+    .from("bookmarks")
+    .select("id, title, url, is_public, category", { count: "exact" })
+    .eq("user_id", user.id);
+
+  if (q) {
+    bookmarksQuery = bookmarksQuery.or(`title.ilike.%${q}%,url.ilike.%${q}%`);
+  }
+
+  if (category && category !== "All") {
+    bookmarksQuery = bookmarksQuery.eq("category", category);
+  }
+
+  const [
+    { data: filteredData, error: filteredError, count: matchingCountResult },
+    { data: allData, error: allStatsError },
+    { data: profile },
+  ] = await Promise.all([
+    bookmarksQuery
+      .order("created_at", { ascending: false })
+      .range(from, to),
+    supabase.from("bookmarks").select("is_public").eq("user_id", user.id),
     supabase.from("profiles").select("handle").eq("id", user.id).maybeSingle(),
   ]);
 
-  if (error) {
-    throw new Error(error.message);
+  if (filteredError) {
+    throw new Error(filteredError.message);
   }
 
-  const bookmarks = (data ?? []) as Bookmark[];
+  if (allStatsError) {
+    throw new Error(allStatsError.message);
+  }
+
+  const bookmarks = (filteredData ?? []) as Bookmark[];
+  const allBookmarks = (allData ?? []) as { is_public: boolean }[];
   const handle = profile?.handle ?? "user";
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
   const publicProfileUrl = appUrl ? `${appUrl}/${handle}` : `/${handle}`;
-  const totalCount = bookmarks.length;
-  const publicCount = bookmarks.filter((bookmark) => bookmark.is_public).length;
+  const totalCount = allBookmarks.length;
+  const publicCount = allBookmarks.filter(
+    (bookmark) => bookmark.is_public,
+  ).length;
   const privateCount = totalCount - publicCount;
+  const isFiltered = !!(q || (category && category !== "All"));
+
+  const matchingCount = matchingCountResult ?? 0;
+  const totalPages = Math.max(1, Math.ceil(matchingCount / limit));
+
+  const startRange = matchingCount === 0 ? 0 : offset + 1;
+  const endRange = Math.min(offset + bookmarks.length, isFiltered ? matchingCount : totalCount);
+
+  const getPageLink = (pageNum: number) => {
+    const params = new URLSearchParams();
+    if (pageNum > 1) {
+      params.set("page", pageNum.toString());
+    }
+    if (q) {
+      params.set("q", q);
+    }
+    if (category && category !== "All") {
+      params.set("category", category);
+    }
+    const queryString = params.toString();
+    return queryString ? `/dashboard?${queryString}` : "/dashboard";
+  };
 
   const stats = [
     {
@@ -118,7 +182,10 @@ export default async function DashboardPage() {
                   description="Save a bookmark to your dashboard."
                   triggerClassName={primaryButtonClassName}
                 />
-                <PublicLinkCopyButton profileUrl={publicProfileUrl} type="public_profile" />
+                <PublicLinkCopyButton
+                  profileUrl={publicProfileUrl}
+                  type="public_profile"
+                />
                 <form action={logoutAction} className="w-full sm:w-auto">
                   <button type="submit" className={secondaryButtonClassName}>
                     <LogOut className="h-4 w-4" />
@@ -128,7 +195,7 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:w-104 lg:grid-cols-1">
+            <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-2 lg:w-104 lg:grid-cols-1">
               <div className="rounded-3xl border border-slate-200/80 bg-slate-950 p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-white/70">
@@ -215,102 +282,173 @@ export default async function DashboardPage() {
               <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
                 {totalCount === 0
                   ? "Start building your link collection."
-                  : `${totalCount} saved ${totalCount === 1 ? "link" : "links"} across your private and public workspace.`}
+                  : isFiltered
+                    ? matchingCount === 0
+                      ? "No matches found."
+                      : `Showing ${startRange}-${endRange} of ${matchingCount} saved ${matchingCount === 1 ? "resource" : "resources"} matching your filters.`
+                    : `Showing ${startRange}-${endRange} of ${totalCount} saved ${totalCount === 1 ? "link" : "links"} across your private and public workspace.`}
               </p>
             </div>
 
-            <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-              <BookMarked className="h-4 w-4 text-emerald-700" />
-              Organized for fast access
-            </div>
+            <BookmarkDialog
+              triggerLabel="Add Bookmark"
+              title="Add bookmark"
+              description="Save a bookmark to your dashboard."
+              triggerClassName={secondaryButtonClassName}
+            />
           </div>
 
+          <SearchAndFilters key={`${q || ""}-${category || "All"}`} />
+
           {bookmarks.length === 0 ? (
-            <div className="mt-8 rounded-[1.75rem] border border-dashed border-slate-300 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbfc_100%)] px-6 py-14 text-center sm:px-10">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                <Plus className="h-7 w-7" />
+            isFiltered ? (
+              <div className="mt-8 rounded-[1.75rem] border border-dashed border-slate-300 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbfc_100%)] px-6 py-14 text-center sm:px-10">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
+                  <Search className="h-7 w-7" />
+                </div>
+                <p className="mt-6 text-lg font-semibold text-slate-950">
+                  No matches found
+                </p>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
+                  We couldn&apos;t find any bookmarks matching your search or
+                  category filters. Try clearing your filters to see all
+                  bookmarks.
+                </p>
+                <div className="mt-8 flex justify-center">
+                  <Link href="/dashboard" className={secondaryButtonClassName}>
+                    Clear filters
+                  </Link>
+                </div>
               </div>
-              <p className="mt-6 text-lg font-semibold text-slate-950">
-                No bookmarks yet
-              </p>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                Add your first link to get started and choose whether it appears
-                on your public profile.
-              </p>
-              <div className="mt-8 flex justify-center">
-                <BookmarkDialog
-                  triggerLabel="Add Bookmark"
-                  title="Add bookmark"
-                  description="Save a bookmark to your dashboard."
-                  triggerClassName={primaryButtonClassName}
-                />
+            ) : (
+              <div className="mt-8 rounded-[1.75rem] border border-dashed border-slate-300 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbfc_100%)] px-6 py-14 text-center sm:px-10">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                  <Plus className="h-7 w-7" />
+                </div>
+                <p className="mt-6 text-lg font-semibold text-slate-950">
+                  No bookmarks yet
+                </p>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
+                  Add your first link to get started and choose whether it
+                  appears on your public profile.
+                </p>
+                <div className="mt-8 flex justify-center">
+                  <BookmarkDialog
+                    triggerLabel="Add Bookmark"
+                    title="Add bookmark"
+                    description="Save a bookmark to your dashboard."
+                    triggerClassName={primaryButtonClassName}
+                  />
+                </div>
               </div>
-            </div>
+            )
           ) : (
-            <ul className="mt-8 grid grid-cols-1 gap-4">
-              {bookmarks.map((bookmark) => (
-                <li
-                  key={bookmark.id}
-                  className="group rounded-3xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_35px_rgba(15,23,42,0.08)]"
-                >
-                  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white">
-                          {bookmark.is_public ? (
-                            <Globe className="h-5 w-5" />
-                          ) : (
-                            <LockKeyhole className="h-5 w-5" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="truncate text-base font-semibold leading-6 text-slate-950 sm:text-lg">
-                            {bookmark.title}
-                          </h3>
-                          <div className="mt-2 flex items-center gap-2">
-                            <Badge bookmark={bookmark} type="visibility" />
-                            <Badge bookmark={bookmark} type="category" />
+            <>
+              <ul className="mt-8 grid grid-cols-1 gap-4">
+                {bookmarks.map((bookmark) => (
+                  <li
+                    key={bookmark.id}
+                    className="group rounded-3xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_35px_rgba(15,23,42,0.08)]"
+                  >
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white">
+                            {bookmark.is_public ? (
+                              <Globe className="h-5 w-5" />
+                            ) : (
+                              <LockKeyhole className="h-5 w-5" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="truncate text-base font-semibold leading-6 text-slate-950 sm:text-lg">
+                              {bookmark.title}
+                            </h3>
+                            <div className="mt-2 flex items-center gap-2">
+                              <Badge bookmark={bookmark} type="visibility" />
+                              <Badge bookmark={bookmark} type="category" />
+                            </div>
                           </div>
                         </div>
+
+                        <a
+                          href={bookmark.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-5 inline-flex max-w-full items-center gap-2 break-all text-sm leading-6 text-slate-500 transition hover:text-slate-950"
+                        >
+                          <ArrowUpRight className="h-4 w-4 shrink-0" />
+                          <span className="truncate sm:max-w-xl">
+                            {bookmark.url}
+                          </span>
+                        </a>
                       </div>
 
-                      <a
-                        href={bookmark.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-5 inline-flex max-w-full items-center gap-2 break-all text-sm leading-6 text-slate-500 transition hover:text-slate-950"
-                      >
-                        <ArrowUpRight className="h-4 w-4 shrink-0" />
-                        <span className="truncate sm:max-w-xl">
-                          {bookmark.url}
-                        </span>
-                      </a>
+                      <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4 lg:border-t-0 lg:pt-0">
+                        <BookmarkDialog
+                          triggerLabel="Edit"
+                          title="Edit bookmark"
+                          description="Update the title, URL, or visibility."
+                          values={{
+                            bookmarkId: bookmark.id,
+                            title: bookmark.title,
+                            url: bookmark.url,
+                            isPublic: bookmark.is_public,
+                            category: bookmark.category,
+                          }}
+                          mode="edit"
+                          triggerClassName={cardActionButtonClassName}
+                        />
+                        <BookmarkDeleteButton
+                          bookmarkId={bookmark.id}
+                          triggerClassName={cardDeleteButtonClassName}
+                        />
+                      </div>
                     </div>
+                  </li>
+                ))}
+              </ul>
 
-                    <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4 lg:border-t-0 lg:pt-0">
-                      <BookmarkDialog
-                        triggerLabel="Edit"
-                        title="Edit bookmark"
-                        description="Update the title, URL, or visibility."
-                        values={{
-                          bookmarkId: bookmark.id,
-                          title: bookmark.title,
-                          url: bookmark.url,
-                          isPublic: bookmark.is_public,
-                          category: bookmark.category,
-                        }}
-                        mode="edit"
-                        triggerClassName={cardActionButtonClassName}
-                      />
-                      <BookmarkDeleteButton
-                        bookmarkId={bookmark.id}
-                        triggerClassName={cardDeleteButtonClassName}
-                      />
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100 pt-6">
+                <div className="text-sm text-slate-500 text-center sm:text-left">
+                  Page <span className="font-semibold text-slate-900">{currentPage}</span> of{" "}
+                  <span className="font-semibold text-slate-900">{totalPages}</span>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  {currentPage > 1 ? (
+                    <Link
+                      href={getPageLink(currentPage - 1)}
+                      className={secondaryButtonClassName}
+                    >
+                      Previous
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-5 text-sm font-medium text-slate-400 cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                  )}
+
+                  {currentPage < totalPages ? (
+                    <Link
+                      href={getPageLink(currentPage + 1)}
+                      className={secondaryButtonClassName}
+                    >
+                      Next
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-5 text-sm font-medium text-slate-400 cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </section>
       </div>
