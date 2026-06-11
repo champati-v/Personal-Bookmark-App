@@ -7,33 +7,28 @@ import {
   Plus,
   Sparkles,
   TrendingUp,
-} from 'lucide-react';
-import { redirect } from 'next/navigation';
+} from "lucide-react";
+import { redirect } from "next/navigation";
 
-import { logoutAction } from '@/app/services/auth-actions';
-import { BookmarkDeleteButton } from '@/components/bookmark-delete-button';
-import { BookmarkDialog } from '@/components/bookmark-dialog';
-import { PublicLinkCopyButton } from '@/components/public-link-copy-button';
-import { createClient } from '@/lib/supabase/server';
-
-type Bookmark = {
-  id: string;
-  title: string;
-  url: string;
-  is_public: boolean;
-};
+import { logoutAction } from "@/app/services/auth-actions";
+import { BookmarkDeleteButton } from "@/components/bookmark-delete-button";
+import { BookmarkDialog } from "@/components/bookmark-dialog";
+import { PublicLinkCopyButton } from "@/components/public-link-copy-button";
+import { createClient } from "@/lib/supabase/server";
+import { Bookmark } from "@/types";
+import Badge from "@/components/badge";
 
 const primaryButtonClassName =
-  'inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-950 px-5 text-sm font-medium text-white shadow-[0_14px_30px_rgba(6,78,59,0.22)] transition hover:bg-emerald-900 sm:w-auto';
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-950 px-5 text-sm font-medium text-white shadow-[0_14px_30px_rgba(6,78,59,0.22)] transition hover:bg-emerald-900 sm:w-auto";
 
 const secondaryButtonClassName =
-  'inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/90 px-5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950 sm:w-auto';
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/90 px-5 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950 sm:w-auto";
 
 const cardActionButtonClassName =
-  'inline-flex h-10 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950';
+  "inline-flex h-10 items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950";
 
 const cardDeleteButtonClassName =
-  'inline-flex h-10 items-center justify-center rounded-full border border-red-200 bg-white px-4 text-sm font-medium text-red-600 transition hover:bg-red-50';
+  "inline-flex h-10 items-center justify-center gap-1 rounded-full border border-red-200 bg-white px-4 text-sm font-medium text-red-600 transition hover:bg-red-50";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -42,16 +37,16 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login');
+    redirect("/login");
   }
 
   const [{ data, error }, { data: profile }] = await Promise.all([
     supabase
-      .from('bookmarks')
-      .select('id, title, url, is_public')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false }),
-    supabase.from('profiles').select('handle').eq('id', user.id).maybeSingle(),
+      .from("bookmarks")
+      .select("id, title, url, is_public, category")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("handle").eq("id", user.id).maybeSingle(),
   ]);
 
   if (error) {
@@ -59,8 +54,8 @@ export default async function DashboardPage() {
   }
 
   const bookmarks = (data ?? []) as Bookmark[];
-  const handle = profile?.handle ?? 'user';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') ?? '';
+  const handle = profile?.handle ?? "user";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
   const publicProfileUrl = appUrl ? `${appUrl}/${handle}` : `/${handle}`;
   const totalCount = bookmarks.length;
   const publicCount = bookmarks.filter((bookmark) => bookmark.is_public).length;
@@ -68,25 +63,25 @@ export default async function DashboardPage() {
 
   const stats = [
     {
-      label: 'Saved links',
+      label: "Saved links",
       value: totalCount,
-      description: 'Everything in your workspace.',
+      description: "Everything in your workspace.",
       icon: BookMarked,
-      iconClassName: 'bg-slate-950 text-white',
+      iconClassName: "bg-slate-950 text-white",
     },
     {
-      label: 'Public links',
+      label: "Public links",
       value: publicCount,
-      description: 'Visible on your shared profile.',
+      description: "Visible on your shared profile.",
       icon: Globe,
-      iconClassName: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100',
+      iconClassName: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100",
     },
     {
-      label: 'Private links',
+      label: "Private links",
       value: privateCount,
-      description: 'Hidden from your public page.',
+      description: "Hidden from your public page.",
       icon: LockKeyhole,
-      iconClassName: 'bg-sky-50 text-sky-700 ring-1 ring-sky-100',
+      iconClassName: "bg-sky-50 text-sky-700 ring-1 ring-sky-100",
     },
   ];
 
@@ -106,12 +101,14 @@ export default async function DashboardPage() {
               </div>
 
               <h1 className="mt-5 text-3xl font-semibold tracking-tighter text-slate-950 sm:text-4xl md:text-5xl">
-                Welcome back, <span className="text-emerald-800">@{handle}</span>
+                Welcome back,{" "}
+                <span className="text-emerald-800">@{handle}</span>
               </h1>
 
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                Manage your saved resources, keep sensitive research private, and
-                maintain a polished public profile without the usual dashboard clutter.
+                Manage your saved resources, keep sensitive research private,
+                and maintain a polished public profile without the usual
+                dashboard clutter.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -121,7 +118,7 @@ export default async function DashboardPage() {
                   description="Save a bookmark to your dashboard."
                   triggerClassName={primaryButtonClassName}
                 />
-                <PublicLinkCopyButton profileUrl={publicProfileUrl} />
+                <PublicLinkCopyButton profileUrl={publicProfileUrl} type="public_profile" />
                 <form action={logoutAction} className="w-full sm:w-auto">
                   <button type="submit" className={secondaryButtonClassName}>
                     <LogOut className="h-4 w-4" />
@@ -134,12 +131,17 @@ export default async function DashboardPage() {
             <div className="grid gap-3 sm:grid-cols-3 lg:w-104 lg:grid-cols-1">
               <div className="rounded-3xl border border-slate-200/80 bg-slate-950 p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-white/70">Profile visibility</p>
+                  <p className="text-sm font-medium text-white/70">
+                    Profile visibility
+                  </p>
                   <Globe className="h-4 w-4 text-emerald-300" />
                 </div>
-                <p className="mt-5 text-3xl font-semibold tracking-tight">{publicCount}</p>
+                <p className="mt-5 text-3xl font-semibold tracking-tight">
+                  {publicCount}
+                </p>
                 <p className="mt-2 text-sm leading-6 text-white/70">
-                  public {publicCount === 1 ? 'bookmark' : 'bookmarks'} ready for sharing
+                  public {publicCount === 1 ? "bookmark" : "bookmarks"} ready
+                  for sharing
                 </p>
               </div>
 
@@ -149,14 +151,18 @@ export default async function DashboardPage() {
                     <TrendingUp className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Workspace health</p>
-                    <p className="text-xs text-slate-500">Your library at a glance</p>
+                    <p className="text-sm font-semibold text-slate-900">
+                      Workspace health
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Your library at a glance
+                    </p>
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-7 text-slate-600">
                   {totalCount === 0
-                    ? 'Your dashboard is ready for its first saved resource.'
-                    : `You have ${totalCount} saved ${totalCount === 1 ? 'link' : 'links'} with ${privateCount} kept private.`}
+                    ? "Your dashboard is ready for its first saved resource."
+                    : `You have ${totalCount} saved ${totalCount === 1 ? "link" : "links"} with ${privateCount} kept private.`}
                 </p>
               </div>
             </div>
@@ -175,7 +181,9 @@ export default async function DashboardPage() {
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+                      <p className="text-sm font-medium text-slate-500">
+                        {stat.label}
+                      </p>
                       <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
                         {stat.value}
                       </p>
@@ -186,7 +194,9 @@ export default async function DashboardPage() {
                       <Icon className="h-5 w-5" />
                     </div>
                   </div>
-                  <p className="mt-4 text-sm leading-6 text-slate-500">{stat.description}</p>
+                  <p className="mt-4 text-sm leading-6 text-slate-500">
+                    {stat.description}
+                  </p>
                 </article>
               );
             })}
@@ -204,8 +214,8 @@ export default async function DashboardPage() {
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
                 {totalCount === 0
-                  ? 'Start building your link collection.'
-                  : `${totalCount} saved ${totalCount === 1 ? 'link' : 'links'} across your private and public workspace.`}
+                  ? "Start building your link collection."
+                  : `${totalCount} saved ${totalCount === 1 ? "link" : "links"} across your private and public workspace.`}
               </p>
             </div>
 
@@ -220,10 +230,12 @@ export default async function DashboardPage() {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
                 <Plus className="h-7 w-7" />
               </div>
-              <p className="mt-6 text-lg font-semibold text-slate-950">No bookmarks yet</p>
+              <p className="mt-6 text-lg font-semibold text-slate-950">
+                No bookmarks yet
+              </p>
               <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                Add your first link to get started and choose whether it appears on
-                your public profile.
+                Add your first link to get started and choose whether it appears
+                on your public profile.
               </p>
               <div className="mt-8 flex justify-center">
                 <BookmarkDialog
@@ -255,11 +267,10 @@ export default async function DashboardPage() {
                           <h3 className="truncate text-base font-semibold leading-6 text-slate-950 sm:text-lg">
                             {bookmark.title}
                           </h3>
-                          <p className="mt-1 text-sm text-slate-500">
-                            {bookmark.is_public
-                              ? 'Visible on your public profile'
-                              : 'Only visible inside your dashboard'}
-                          </p>
+                          <div className="mt-2 flex items-center gap-2">
+                            <Badge bookmark={bookmark} type="visibility" />
+                            <Badge bookmark={bookmark} type="category" />
+                          </div>
                         </div>
                       </div>
 
@@ -270,20 +281,13 @@ export default async function DashboardPage() {
                         className="mt-5 inline-flex max-w-full items-center gap-2 break-all text-sm leading-6 text-slate-500 transition hover:text-slate-950"
                       >
                         <ArrowUpRight className="h-4 w-4 shrink-0" />
-                        <span className="truncate sm:max-w-xl">{bookmark.url}</span>
+                        <span className="truncate sm:max-w-xl">
+                          {bookmark.url}
+                        </span>
                       </a>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4 lg:border-t-0 lg:pt-0">
-                      <span
-                        className={`inline-flex h-10 shrink-0 items-center rounded-full px-3 text-xs font-medium ${
-                          bookmark.is_public
-                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
-                      >
-                        {bookmark.is_public ? 'Public' : 'Private'}
-                      </span>
                       <BookmarkDialog
                         triggerLabel="Edit"
                         title="Edit bookmark"
@@ -293,6 +297,7 @@ export default async function DashboardPage() {
                           title: bookmark.title,
                           url: bookmark.url,
                           isPublic: bookmark.is_public,
+                          category: bookmark.category,
                         }}
                         mode="edit"
                         triggerClassName={cardActionButtonClassName}

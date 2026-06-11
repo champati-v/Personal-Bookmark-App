@@ -1,9 +1,10 @@
 'use client';
 
-import { Globe, Link2, LockKeyhole, Tag } from 'lucide-react';
+import { FolderOpen, Globe, Link2, LockKeyhole, Tag } from 'lucide-react';
 import { useActionState, useEffect } from 'react';
 
 import type { BookmarkState, BookmarkValues } from '@/app/services/bookmark-actions';
+import { BOOKMARK_CATEGORIES } from '../types/bookmark';
 
 type BookmarkAction = (
   state: BookmarkState,
@@ -83,6 +84,47 @@ export function BookmarkForm({
           defaultValue={values?.url ?? ''}
           className={inputClassName}
         />
+      </div>
+
+      <div className="space-y-2.5">
+        <label
+          htmlFor="category"
+          className="flex items-center gap-2 text-sm font-medium text-slate-800"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+            <FolderOpen className="h-4 w-4" />
+          </span>
+          Category
+        </label>
+        <div className="relative">
+          <select
+            id="category"
+            name="category"
+            defaultValue={values?.category ?? 'Other'}
+            className={`${inputClassName} appearance-none pr-10`}
+          >
+            {BOOKMARK_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbfc_100%)] p-4 text-sm text-slate-700 transition hover:border-slate-300">

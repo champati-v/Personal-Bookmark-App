@@ -1,7 +1,10 @@
-import { ArrowUpRight, BookMarked, Globe, Link2, Sparkles } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { ArrowUpRight, BookMarked, Globe, Link2, Sparkles } from "lucide-react";
+import { notFound } from "next/navigation";
 
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient } from "@/lib/supabase/admin";
+import { Profile } from "@/types";
+import { PublicLinkCopyButton } from "@/components/public-link-copy-button";
+import Badge from "@/components/badge";
 
 type PageProps = {
   params: Promise<{
@@ -9,19 +12,14 @@ type PageProps = {
   }>;
 };
 
-type Profile = {
-  id: string;
-  handle: string;
-};
-
 export default async function PublicProfilePage({ params }: PageProps) {
   const supabase = createAdminClient();
   const { handle } = await params;
 
   const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, handle')
-    .eq('handle', handle)
+    .from("profiles")
+    .select("id, handle")
+    .eq("handle", handle)
     .maybeSingle<Profile>();
 
   if (profileError) {
@@ -33,11 +31,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
   }
 
   const { data: bookmarks, error: bookmarksError } = await supabase
-    .from('bookmarks')
-    .select('id, title, url')
-    .eq('user_id', profile.id)
-    .eq('is_public', true)
-    .order('created_at', { ascending: false });
+    .from("bookmarks")
+    .select("id, title, url, category, is_public")
+    .eq("user_id", profile.id)
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
 
   if (bookmarksError) {
     throw new Error(bookmarksError.message);
@@ -71,8 +69,8 @@ export default async function PublicProfilePage({ params }: PageProps) {
                   </h1>
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
                     {publicBookmarkCount === 0
-                      ? 'No public links shared yet.'
-                      : `${publicBookmarkCount} public ${publicBookmarkCount === 1 ? 'link' : 'links'} curated and ready to explore.`}
+                      ? "No public links shared yet."
+                      : `${publicBookmarkCount} public ${publicBookmarkCount === 1 ? "link" : "links"} curated and ready to explore.`}
                   </p>
                 </div>
               </div>
@@ -81,7 +79,9 @@ export default async function PublicProfilePage({ params }: PageProps) {
             <div className="grid gap-4 sm:grid-cols-2 lg:w-88 lg:grid-cols-1">
               <div className="rounded-3xl border border-slate-200/80 bg-slate-950 p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-white/70">Shared resources</p>
+                  <p className="text-sm font-medium text-white/70">
+                    Shared resources
+                  </p>
                   <Globe className="h-4 w-4 text-emerald-300" />
                 </div>
                 <p className="mt-5 text-3xl font-semibold tracking-tight">
@@ -98,13 +98,17 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     <BookMarked className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Curated list</p>
-                    <p className="text-xs text-slate-500">Clean public browsing</p>
+                    <p className="text-sm font-semibold text-slate-900">
+                      Curated list
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Clean public browsing
+                    </p>
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-7 text-slate-600">
-                  A simple profile for browsing selected links without the noise of a
-                  full dashboard.
+                  A simple profile for browsing selected links without the noise
+                  of a full dashboard.
                 </p>
               </div>
             </div>
@@ -144,12 +148,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
             <ul className="mt-8 flex flex-col gap-4">
               {bookmarks.map((bookmark) => (
                 <li key={bookmark.id}>
-                  <a
-                    href={bookmark.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group block rounded-3xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_35px_rgba(15,23,42,0.08)] sm:p-6"
-                  >
+                  <span className="group block rounded-3xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] p-5 shadow-[0_12px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_35px_rgba(15,23,42,0.08)] sm:p-6">
                     <div className="flex items-center justify-between gap-4">
                       <div className="min-w-0 text-left">
                         <div className="flex items-center gap-3">
@@ -157,23 +156,35 @@ export default async function PublicProfilePage({ params }: PageProps) {
                             <Link2 className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">
-                            <h2 className="text-base font-semibold leading-6 text-slate-950 sm:text-lg">
+                            <h2 className="flex items-center gap-2 text-base font-semibold leading-6 text-slate-950 sm:text-lg">
                               {bookmark.title}
+                              <Badge bookmark={bookmark} type="category" />
                             </h2>
-                            <p className="mt-1 truncate text-sm text-slate-500">
+                            <a
+                              href={bookmark.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-1 truncate text-sm text-slate-500 hover:underline"
+                            >
                               {bookmark.url}
-                            </p>
+                            </a>
                           </div>
                         </div>
                       </div>
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition group-hover:border-slate-300 group-hover:text-slate-950"
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <PublicLinkCopyButton profileUrl={bookmark.url} type="url" />
+                        <a href={bookmark.url} target="_blank" rel="noreferrer">
+                          <span
+                            aria-hidden="true"
+                            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition group-hover:border-slate-300 group-hover:text-slate-950"
+                          >
+                            <ArrowUpRight className="h-4 w-4" />
+                          </span>
+                        </a>
+                      </div>
                     </div>
-                  </a>
+                  </span>
                 </li>
               ))}
             </ul>

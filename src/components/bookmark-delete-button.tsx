@@ -51,6 +51,7 @@ export function BookmarkDeleteButton({
           'inline-flex h-9 items-center justify-center rounded-full border border-red-200 px-3 text-sm font-medium text-red-600 hover:bg-red-50'
         }
       >
+        <Trash2 className="h-4 w-4" />
         Delete
       </button>
 
